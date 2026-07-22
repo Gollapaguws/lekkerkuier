@@ -2,7 +2,7 @@
 node_modules/
 
 # Build output
-public-staging/
+src-new/public-staging/
 dist/
 
 # IDE
