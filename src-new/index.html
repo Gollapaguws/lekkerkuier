@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en-ZA" data-theme="psytech">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0d1230" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#0a0f2c" />
+
+    <!-- Primary SEO -->
+    <title>Lekkerkuier — PsyTech Fusion Radio | 24/7 Psytrance &amp; Industrial</title>
+    <meta name="description" content="Mzansi's 24/7 PsyTech Fusion radio. Streaming psytrance, dark techno, industrial, and electronic music. Live DJs, listener chat, and song requests." />
+    <meta name="keywords" content="psytrance radio, industrial techno, electronic music, 24/7 radio, lekkerkuier, south african radio, online radio, psytech" />
+    <meta name="author" content="Lekker Kuier Psy Radio" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://lekkerkuier.com/" />
+
+    <!-- Open Graph (Facebook, LinkedIn, etc.) -->
+    <meta property="og:type" content="music.radio_station" />
+    <meta property="og:title" content="Lekkerkuier — PsyTech Fusion Radio" />
+    <meta property="og:description" content="Mzansi's 24/7 PsyTech Fusion radio. Psytrance, industrial, dark techno, and electronic music." />
+    <meta property="og:url" content="https://lekkerkuier.com/" />
+    <meta property="og:image" content="https://lekkerkuier.com/assets/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:site_name" content="Lekkerkuier" />
+    <meta property="og:locale" content="en_ZA" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Lekkerkuier — PsyTech Fusion Radio" />
+    <meta name="twitter:description" content="24/7 psytrance, industrial, and electronic music from Mzansi." />
+    <meta name="twitter:image" content="https://lekkerkuier.com/assets/og-image.png" />
+
+    <!-- Structured data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "RadioStation",
+      "name": "Lekkerkuier",
+      "alternateName": "Lekker Kuier Psy Radio",
+      "description": "Mzansi's 24/7 PsyTech Fusion radio broadcasting psytrance, industrial, and electronic music.",
+      "url": "https://lekkerkuier.com",
+      "sameAs": [
+        "https://discord.gg/lekkerkuier",
+        "https://x.com/lekkerkuier",
+        "https://instagram.com/lekkerkuier",
+        "https://soundcloud.com/lekkerkuier",
+        "https://mixcloud.com/lekkerkuier",
+        "https://youtube.com/@lekkerkuier"
+      ],
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "ZA"
+      },
+      "broadcastFrequency": "Internet radio",
+      "genre": ["Psytrance", "Industrial", "Dark Techno", "Electronic", "Psybient"]
+    }
+    </script>
+
+    <!-- PWA -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" href="/assets/icon-192.png" />
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Lekkerkuier" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Inter:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!--
+      Phase 5 polyfill block (2026-07-19).
+      Guards against SPA bundles that reference `isLoadingPublicSettings`
+      / `setIsLoadingPublicSettings` symbols imported before they are
+      exported by a (potentially stale or freshly-built) upstream
+      bundle. Defensive only — DO NOT REMOVE.
+    -->
+    <script>
+      ;(function () {
+        try {
+          // Polyfill core defensive globals (the prior SPA bundle
+          // crashes on the 'ej' layout helper if these resolve to
+          // `null` / `undefined` — Path-X defect 2026-07-19).
+          // Using `globalThis` (not `window`) keeps canonical
+          // consistency with the inline polyfill that lives in
+          // /opt/radio/web/public/index.html and was the
+          // canonical pre-Vite pattern.
+          if (typeof globalThis.isLoadingPublicSettings === 'undefined') {
+            globalThis.isLoadingPublicSettings = false;
+          }
+          if (typeof globalThis.setIsLoadingPublicSettings === 'undefined') {
+            globalThis.setIsLoadingPublicSettings = function () {};
+          }
+          // Public settings (admin defaults that the SPA reads
+          // before its own API settles) — empty object. The upstream
+          // bundle reads `publicSettings.thing`; an empty object
+          // gives safe `undefined` reads that the SPA's
+          // optional-chaining protects against.
+          if (typeof globalThis.publicSettings === 'undefined') {
+            globalThis.publicSettings = {};
+          }
+          // ServiceWorker unregister: kill any rogue SW leftover
+          // from earlier SSG / runtime caches. Without this, a
+          // cached SW can intercept the navigation and serve the
+          // pre-polyfill build → black screen.
+          if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(function (regs) {
+              for (var i = 0; i < regs.length; i++) {
+                try { regs[i].unregister(); } catch (_) { /* ignore */ }
+              }
+            });
+          }
+        } catch (_) { /* best-effort; ignore */ }
+      })();
+    </script>
+
+    <!--
+      Theme bootstrap (anti-FOUC). Reads
+      `localStorage['lekkerkuier-theme']` and applies the matching
+      `data-theme="..."` attribute on <html> BEFORE React mounts,
+      so the initial paint already uses the selected palette and
+      there is no flash of the default theme.
+    -->
+    <script>
+      ;(function () {
+        try {
+          var theme = localStorage.getItem('lekkerkuier-theme');
+          var allowed = ['cosmic', 'industrial', 'psytech'];
+          if (!theme || allowed.indexOf(theme) < 0) theme = 'psytech';
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (_) {
+          document.documentElement.setAttribute('data-theme', 'psytech');
+        }
+      })();
+    </script>
+  </head>
+
+  <body class="bg-bg text-text font-body antialiased">
+    <noscript>
+      <div style="padding:24px;color:#fff;background:#0d1230;font-family:sans-serif">
+        <h1>JavaScript required</h1>
+        <p>Lekkerkuier Radio needs JavaScript enabled to render the player. The stream is still live at <a style="color:#7cf" href="/autodj.mp3">/autodj.mp3</a>.</p>
+      </div>
+    </noscript>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

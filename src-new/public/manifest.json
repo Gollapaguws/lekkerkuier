@@ -1,0 +1,29 @@
+{
+  "name": "Lekkerkuier — PsyTech Fusion Radio",
+  "short_name": "Lekkerkuier",
+  "description": "Mzansi's 24/7 PsyTech Fusion radio. Transcend the Vibration.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0a0f2c",
+  "theme_color": "#56d2ff",
+  "icons": [
+    {
+      "src": "/assets/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["music", "entertainment"],
+  "lang": "en-ZA",
+  "dir": "ltr",
+  "prefer_related_applications": false
+}
