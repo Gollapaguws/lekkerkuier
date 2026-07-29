@@ -1,0 +1,9 @@
+tunnel: b46aa6e2-c019-43c5-82be-42d33b201c1c
+credentials-file: /root/.cloudflared/b46aa6e2-c019-43c5-82be-42d33b201c1c.json
+
+ingress:
+  - hostname: lekkerkuier.com
+    service: http://localhost:80
+  - hostname: "*.lekkerkuier.com"
+    service: http://localhost:80
+  - service: http_status:404
