@@ -13,11 +13,9 @@ echo "🔨 Building React SPA..."
 cd "$SRC_DIR"
 npm run build 2>&1
 
-echo "📦 Copying build to $PUBLIC_DIR..."
-rm -rf "$PUBLIC_DIR"
-mkdir -p "$PUBLIC_DIR"
-cp -r dist/* "$PUBLIC_DIR/"
+echo "📦 Build complete — output in $PUBLIC_DIR/..."
 
+# Vite builds directly to ../public-staging; no dist copy needed
 echo "🚀 Deploying to VPS1..."
 rm -rf "$WEB_DIR"/*
 cp -r "$PUBLIC_DIR"/* "$WEB_DIR/"
