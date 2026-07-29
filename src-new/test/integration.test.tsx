@@ -13,6 +13,7 @@ vi.mock('../src/api/client', () => ({
     liveStats: () => Promise.resolve({ viewer_count: 0, bitrate: 0, server_name: '', listenurl: '', updated_date: '' }),
     djs: () => Promise.resolve([]),
     sendContact: () => Promise.resolve({ ok: true }),
+    notifyContact: () => Promise.resolve({ ok: true }),
     sendChat: () => Promise.resolve({ ok: true }),
     submitShow: () => Promise.resolve({}),
     presign: () => Promise.resolve({}),
