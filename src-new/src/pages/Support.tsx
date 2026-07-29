@@ -9,7 +9,7 @@ const DONATION_TIERS = [
 
 const OTHER_WAYS = [
   { title: 'Share the Station', desc: 'Tell your friends about Lekkerkuier. Word of mouth is the most powerful support.', emoji: '📢' },
-  { title: 'Submit a Show', desc: 'Got mixing skills? Submit your own show and become part of the family.', emoji: '🎧' },
+  { title: 'Become a DJ', desc: 'Got mixing skills? Submit your own show and become part of the family.', emoji: '🎧' },
   { title: 'Send Us Music', desc: 'Know great underground psytrance? Send us tracks and we\'ll feature them.', emoji: '🎵' },
   { title: 'Join the Chat', desc: 'Be active in our listener chat — a vibrant community makes everything better.', emoji: '💬' },
 ];

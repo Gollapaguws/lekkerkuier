@@ -14,15 +14,13 @@ const QUICK_LINKS = [
   { to: '/schedule', label: 'Schedule' },
   { to: '/djs', label: 'DJs' },
   { to: '/events', label: 'Events' },
-  { to: '/podcast', label: 'On Demand' },
   { to: '/history', label: 'Track History' },
   { to: '/blog', label: 'Blog' },
-  { to: '/gallery', label: 'Gallery' },
   { to: '/chat', label: 'Chat' },
   { to: '/support', label: 'Support Us' },
   { to: '/contact', label: 'Contact' },
   { to: '/sitemap', label: 'Site Map' },
-  { to: '/submit', label: 'Submit a Show' },
+  { to: '/submit', label: 'Become a DJ' },
 ];
 
 export function Footer() {

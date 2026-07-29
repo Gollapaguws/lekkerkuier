@@ -4,7 +4,7 @@ import { useI18n } from '../i18n/I18nProvider';
 
 interface SearchResult {
   id: string;
-  type: 'blog' | 'podcast' | 'event' | 'page';
+  type: 'blog' | 'event' | 'page';
   title: string;
   subtitle: string;
   url: string;
@@ -19,14 +19,7 @@ const SEARCH_INDEX: SearchResult[] = [
   { id: 'blog-solaris', type: 'blog', title: 'DJ Solaris Interview', subtitle: 'Evolution of Psytrance in SA', url: '#/blog', icon: '🎤' },
   { id: 'blog-psytech', type: 'blog', title: 'What is PsyTech?', subtitle: 'Fusion genre guide', url: '#/blog', icon: '🎵' },
   { id: 'blog-spotlight', type: 'blog', title: 'Community Spotlight July', subtitle: 'Most active listeners', url: '#/blog', icon: '💜' },
-  { id: 'blog-submit-guide', type: 'blog', title: 'Submit Your Show Guide', subtitle: 'Complete guide for new DJs', url: '#/blog', icon: '📻' },
-  // Podcast episodes
-  { id: 'pod-midnight-42', type: 'podcast', title: 'Midnight Frequencies Ep.42', subtitle: 'Full Moon Transmission — DJ Solaris', url: '#/podcast', icon: '🌕' },
-  { id: 'pod-industrial-28', type: 'podcast', title: 'Industrial Overdrive Ep.28', subtitle: 'Steel & Static — Bass Cathedral', url: '#/podcast', icon: '⚙️' },
-  { id: 'pod-sunrise-15', type: 'podcast', title: 'Sunrise Sessions Ep.15', subtitle: 'Dawn Chorus Mix — DJ Luna', url: '#/podcast', icon: '🌅' },
-  { id: 'pod-dark-9', type: 'podcast', title: 'Dark Forest Ep.9', subtitle: 'Shadow Realm — Nyx', url: '#/podcast', icon: '🌲' },
-  { id: 'pod-midnight-41', type: 'podcast', title: 'Midnight Frequencies Ep.41', subtitle: 'Stargate Sequence — DJ Solaris', url: '#/podcast', icon: '🌌' },
-  { id: 'pod-technoir-5', type: 'podcast', title: 'TechNoir Ep.5', subtitle: 'Binary Pulse — Unit-7', url: '#/podcast', icon: '🤖' },
+  { id: 'blog-submit-guide', type: 'blog', title: 'Become a DJ Guide', subtitle: 'Complete guide for new DJs', url: '#/blog', icon: '📻' },
   // Events
   { id: 'evt-cosmic', type: 'event', title: 'Cosmic Dawn Festival Set', subtitle: 'Aug 15 — DJ Solaris', url: '#/events', icon: '🌅' },
   { id: 'evt-industrial', type: 'event', title: 'Industrial Revolt: Dark Techno Night', subtitle: 'Jul 30 — BassCathedral', url: '#/events', icon: '🏭' },
@@ -40,11 +33,10 @@ const SEARCH_INDEX: SearchResult[] = [
   { id: 'page-support', type: 'page', title: 'Support Lekkerkuier', subtitle: 'Donate and help the station', url: '#/support', icon: '💎' },
   { id: 'page-about', type: 'page', title: 'About Lekkerkuier', subtitle: 'Our story and mission', url: '#/about', icon: 'ℹ️' },
   { id: 'page-contact', type: 'page', title: 'Contact Us', subtitle: 'Get in touch', url: '#/contact', icon: '✉️' },
-  { id: 'page-gallery', type: 'page', title: 'Gallery', subtitle: 'Photos and artwork', url: '#/gallery', icon: '🖼️' },
 ];
 
-const TYPE_LABELS: Record<string, string> = { blog: 'Blog', podcast: 'On Demand', event: 'Event', page: 'Page' };
-const TYPE_COLORS: Record<string, string> = { blog: 'bg-purple-500/20 text-purple-300', podcast: 'bg-cyan-500/20 text-cyan-300', event: 'bg-amber-500/20 text-amber-300', page: 'bg-emerald-500/20 text-emerald-300' };
+const TYPE_LABELS: Record<string, string> = { blog: 'Blog', event: 'Event', page: 'Page' };
+const TYPE_COLORS: Record<string, string> = { blog: 'bg-purple-500/20 text-purple-300', event: 'bg-amber-500/20 text-amber-300', page: 'bg-emerald-500/20 text-emerald-300' };
 
 interface SearchProps {
   isOpen: boolean;

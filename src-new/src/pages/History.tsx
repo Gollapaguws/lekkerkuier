@@ -151,7 +151,7 @@ export function History() {
             <span className="text-[var(--lk-primary)]">Track</span> History
           </h1>
           <p className="text-[var(--lk-text-muted)] max-w-lg mx-auto text-lg">
-            {history.length} recently played tracks from AzuraCast
+            {history.length} recently played tracks
           </p>
         </div>
 

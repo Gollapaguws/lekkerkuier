@@ -1,15 +1,15 @@
-import { useEffect, useState, useRef, useCallback } from 'react';
-import { api, LiveStreamStats } from '../api/client';
+import { useEffect, useState, useCallback } from 'react';
+import { api, NowPlayingData } from '../api/client';
 import { Visualizer } from './Visualizer';
 
 interface PlayerProps {
   playing: boolean;
   onTogglePlay: () => void;
+  audioRef: React.RefObject<HTMLAudioElement | null>;
 }
 
-export function Player({ playing, onTogglePlay }: PlayerProps) {
-  const audioRef = useRef<HTMLAudioElement>(null);
-  const [stats, setStats] = useState<LiveStreamStats | null>(null);
+export function Player({ playing, onTogglePlay, audioRef }: PlayerProps) {
+  const [stats, setStats] = useState<NowPlayingData | null>(null);
   const [volume, setVolume] = useState(0.8);
   const [muted, setMuted] = useState(false);
 
@@ -29,13 +29,13 @@ export function Player({ playing, onTogglePlay }: PlayerProps) {
     }
   }, [playing]);
 
-  // Live stats polling
+  // Live stats polling — use nowPlaying since LiveStreamStats is inaccessible
   useEffect(() => {
     let cancelled = false;
     const tick = async () => {
       try {
-        const s = await api.liveStats();
-        if (!cancelled) setStats(s);
+        const data = await api.nowPlaying();
+        if (!cancelled && data.length > 0) setStats(data[0]);
       } catch { /* offline */ }
     };
     tick();
@@ -76,10 +76,10 @@ export function Player({ playing, onTogglePlay }: PlayerProps) {
       {/* Track info */}
       <div className="flex-1 min-w-0">
         <p className="font-semibold text-[var(--lk-text)] truncate">
-          {stats?.server_name || 'Lekker Kuier Psy Radio'}
+          {stats?.station?.name || 'Lekker Kuier Psy Radio'}
         </p>
         <p className="text-[var(--lk-text-muted)] truncate">
-          {stats ? `${stats.viewer_count} listeners · ${stats.bitrate} kbps` : 'Connecting…'}
+          {stats ? `${stats.listeners.total} listeners · 192 kbps` : 'Connecting…'}
         </p>
       </div>
 

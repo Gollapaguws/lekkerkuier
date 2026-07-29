@@ -43,7 +43,7 @@ export function Listen() {
           </p>
           <div className="flex gap-3 mt-3 text-xs">
             <Link to="/schedule" className="btn-glow px-3 py-1">Schedule</Link>
-            <Link to="/submit" className="glass-panel px-3 py-1">Submit a Show</Link>
+            <Link to="/submit" className="glass-panel px-3 py-1">Become a DJ</Link>
           </div>
         </div>
       </section>

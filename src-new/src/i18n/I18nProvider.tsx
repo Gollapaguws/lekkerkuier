@@ -14,7 +14,7 @@ const MESSAGES: Record<Lang, Record<string, string>> = {
     'nav.about': 'About',
     'nav.support': 'Support',
     'nav.contact': 'Contact',
-    'nav.submit': 'Submit',
+    'nav.submit': 'Become a DJ',
     'nav.signin': 'Sign in',
     'nav.admin': 'Admin',
     'nav.logout': 'Logout',
@@ -39,7 +39,7 @@ const MESSAGES: Record<Lang, Record<string, string>> = {
     'home.featuredShows': 'Featured Shows',
     'home.recentlyPlayed': 'Recently Played',
     'home.viewSchedule': 'View Full Schedule',
-    'home.submitYourShow': 'Submit Your Show',
+    'home.submitYourShow': 'Become a DJ',
 
     // Schedule
     'schedule.title': 'Weekly Schedule',
@@ -198,7 +198,7 @@ const MESSAGES: Record<Lang, Record<string, string>> = {
     'nav.about': 'Oor Ons',
     'nav.support': 'Ondersteun',
     'nav.contact': 'Kontak',
-    'nav.submit': 'Dien In',
+    'nav.submit': 'Word \'n DJ',
     'nav.signin': 'Teken In',
     'nav.admin': 'Admin',
     'nav.logout': 'Teken Uit',
@@ -223,7 +223,7 @@ const MESSAGES: Record<Lang, Record<string, string>> = {
     'home.featuredShows': 'Uitgeligte Programme',
     'home.recentlyPlayed': 'Onlangs Gespeel',
     'home.viewSchedule': 'Bekyk Volledige Program',
-    'home.submitYourShow': 'Dien Jou Program In',
+    'home.submitYourShow': 'Word \'n DJ',
 
     // Schedule
     'schedule.title': 'Weeklikse Program',

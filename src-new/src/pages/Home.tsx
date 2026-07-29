@@ -3,28 +3,30 @@ import { Hero } from '../components/Hero';
 import { NowPlaying } from '../components/NowPlaying';
 import { RecentlyPlayed } from '../components/RecentlyPlayed';
 import { ShowCard } from '../components/ShowCard';
+import { AudioVisualizer } from '../components/AudioVisualizer';
 import { useI18n } from '../i18n/I18nProvider';
-import { api, Show, LiveStreamStats } from '../api/client';
+import { api, Show, NowPlayingData } from '../api/client';
 
 interface HomeProps {
   playing: boolean;
   onTogglePlay: () => void;
+  audioRef: React.RefObject<HTMLAudioElement | null>;
 }
 
-export function Home({ playing, onTogglePlay }: HomeProps) {
+export function Home({ playing, onTogglePlay, audioRef }: HomeProps) {
   const { t } = useI18n();
-  const [stats, setStats] = useState<LiveStreamStats | null>(null);
+  const [stats, setStats] = useState<NowPlayingData | null>(null);
   const [shows, setShows] = useState<Show[]>([]);
   const [currentShow, setCurrentShow] = useState<Show | null>(null);
 
   useEffect(() => {
     let cancelled = false;
 
-    // Live stats
+    // Live stats — use nowPlaying since LiveStreamStats is inaccessible
     const tick = async () => {
       try {
-        const s = await api.liveStats();
-        if (!cancelled) setStats(s);
+        const data = await api.nowPlaying();
+        if (!cancelled && data.length > 0) setStats(data[0]);
       } catch { /* offline */ }
     };
     tick();
@@ -52,6 +54,9 @@ export function Home({ playing, onTogglePlay }: HomeProps) {
         stationName="Lekker Kuier"
         tagline={t('home.tagline') + ' • 24/7'}
       />
+
+      {/* Audio Visualizer */}
+      <AudioVisualizer playing={playing} audioRef={audioRef} />
 
       {/* Content sections */}
       <div className="max-w-6xl mx-auto px-4 md:px-8 pb-24 space-y-10">
@@ -90,7 +95,7 @@ export function Home({ playing, onTogglePlay }: HomeProps) {
         <section className="glass p-8 text-center stagger">
           <h2 className="heading text-2xl md:text-3xl mb-3">{t('home.submitYourShow')}</h2>
           <p className="text-[var(--lk-text-muted)] max-w-md mx-auto mb-6 text-sm">
-            {t('podcast.subtitle')}
+            Transcend the vibration. Plug into Mzansi's 24/7 stream.
           </p>
           <a href="#/submit" className="btn-glow px-8 py-3 inline-flex text-sm">
             {t('home.submitYourShow')}

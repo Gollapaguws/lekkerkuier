@@ -128,17 +128,31 @@ export function Hero({ playing, onTogglePlay, stationName = 'Lekker Kuier', tagl
           Transcend the vibration. Plug into Mzansi's 24/7 stream of psytrance, industrial, and crystalline soundscapes.
         </p>
 
-        {/* Play button */}
-        <button
-          type="button"
-          onClick={onTogglePlay}
-          className="hero-play-btn mx-auto"
-          aria-label={playing ? 'Pause stream' : 'Play stream'}
-        >
-          <span className="relative z-10 heading text-4xl text-[var(--lk-bg)]">
-            {playing ? '❚❚' : '▶'}
-          </span>
-        </button>
+        {/* Play button — wrapper div absorbs stagger animation so glow-pulse isn't overridden */}
+        <div>
+          <button
+            type="button"
+            onClick={onTogglePlay}
+            className="hero-play-btn mx-auto"
+            style={{
+              width: 180,
+              height: 180,
+              borderRadius: '50%',
+              background: 'radial-gradient(circle, #56d2ff 0%, #b388ff 55%, #141d4a 90%, #0a0f2c 100%)',
+              border: '3px solid rgba(86,210,255,0.5)',
+              cursor: 'pointer',
+              position: 'relative',
+              display: 'grid',
+              placeItems: 'center',
+              boxShadow: '0 0 40px -8px #56d2ff, 0 0 80px -16px #b388ff',
+            }}
+            aria-label={playing ? 'Pause stream' : 'Play stream'}
+          >
+            <span className="heading" style={{ position: 'relative', zIndex: 10, fontSize: '3.75rem', color: 'white', filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.3))' }}>
+              {playing ? '❚❚' : '▶'}
+            </span>
+          </button>
+        </div>
 
         <p className="text-xs text-[var(--lk-text-muted)] mt-6">
           {playing ? 'Streaming live — tap to pause' : 'Tap to start the vibe'}

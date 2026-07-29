@@ -1,4 +1,4 @@
-import type { OperatorUser } from '../auth/AuthProvider';
+import type { User } from '../auth/AuthProvider';
 
 export interface Show {
   id: string;
@@ -73,7 +73,7 @@ export interface PresignResult {
   prefix: string;
 }
 
-const TOKEN_KEY = 'lekkerkuier-token';
+const TOKEN_KEY = 'lekkerkuier-jwt';
 function authHeader(): HeadersInit {
   try {
     const tok = localStorage.getItem(TOKEN_KEY);
@@ -106,9 +106,9 @@ async function jpost<T>(url: string, body: unknown, withAuth = false): Promise<T
 }
 
 export const api = {
-  shows: () => jget<Show[]>('/api/Show'),
+  shows: () => jget<Show[]>('/api/station/1/schedule'),
   liveStats: () => jget<LiveStreamStats>('/api/LiveStreamStats'),
-  djs: () => jget<OperatorUser[]>('/api/DJ'),
+  djs: () => jget<User[]>('/api/station/1/streamers'),
   submitShow: (
     payload: Omit<Show, 'id' | 'is_live' | 'created_date' | 'stream_url'>
   ) => jpost<Show>('/api/Show', payload, false),

@@ -1,69 +1,82 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, ReactNode } from 'react';
 
 /**
- * AuthProvider — 3-state contract that mirrors the /api/auth/me
- * contract behind the nginx + call-trigger stack.
+ * Role-based AuthProvider — 4-tier system backed by Node.js auth backend.
+ *
+ * Roles (ascending): listener → dj → manager → owner
  *
  * State transitions:
- *   mount       → fetch('/api/auth/me') with Bearer if localStorage has a
- *                 token
- *     200 + bare user shape  → Authenticated
- *     200 + {"user":{}}     → Anonymous (Path-X shape; never null)
- *     401                    → Anonymous (also clears stale token)
- *     network blip           → Anonymous (without nuking the token; the
- *                              60s re-probe below will catch a real
- *                              expiry rather than a transient fetch err)
+ *   mount → GET /api/auth/me (Bearer JWT from localStorage)
+ *     200 → Authenticated with role
+ *     401 → Anonymous (clear stale token)
+ *     4xx/5xx → Anonymous (keep token for retry)
  *
- *   login(tok)  → POST /api/auth/login → on 200 store token + Authenticated
- *   logout()    → clear token + Anonymous
+ *   login(email, pw) → POST /api/auth/login
+ *     200 → store JWT → Authenticated
  *
- * The "anonymous" branch stays `user: {}` (an empty object) because the
- * SPA's layout helper computes `(s && (s.full_name||s.email||"?"))[0]`
- * and `null[0]` would throw — see Path-X defect 2026-07-19.
+ *   register(email, pw, name) → POST /api/auth/register
+ *     201 → store JWT → Authenticated (all new accounts are 'listener')
+ *
+ *   logout() → clear JWT → Anonymous
  */
 
-export interface OperatorUser {
+export type Role = 'listener' | 'dj' | 'manager' | 'owner';
+
+export const ROLE_RANK: Record<Role, number> = {
+  listener: 0,
+  dj: 1,
+  manager: 2,
+  owner: 3,
+};
+
+/** Check if a role meets the minimum required rank */
+export function roleAtLeast(role: Role, minimum: Role): boolean {
+  return ROLE_RANK[role] >= ROLE_RANK[minimum];
+}
+
+export interface User {
   id: string;
   email: string;
   full_name: string;
-  role: 'admin' | 'operator';
+  role: Role;
+  created_at?: string;
 }
 
 export type AuthState =
   | { kind: 'loading' }
   | { kind: 'anonymous'; user: Record<string, never> }
-  | { kind: 'authenticated'; user: OperatorUser };
+  | { kind: 'authenticated'; user: User };
 
 interface AuthContextValue {
   state: AuthState;
-  login: (token: string) => Promise<{ ok: boolean; error?: string }>;
+  login: (email: string, password: string) => Promise<{ ok: boolean; error?: string }>;
+  register: (email: string, password: string, fullName: string) => Promise<{ ok: boolean; error?: string }>;
   logout: () => void;
   getToken: () => string | null;
 }
 
-const TOKEN_KEY = 'lekkerkuier-token';
+const TOKEN_KEY = 'lekkerkuier-jwt';
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 async function probeMe(token: string | null): Promise<AuthState> {
-  const headers: HeadersInit = {};
-  if (token) headers['Authorization'] = `Bearer ${token}`;
+  if (!token) return { kind: 'anonymous', user: {} };
   try {
-    const r = await fetch('/api/auth/me', { headers, cache: 'no-store' });
+    const r = await fetch('/api/auth/me', {
+      headers: { Authorization: `Bearer ${token}` },
+      cache: 'no-store',
+    });
     if (r.ok) {
-      const body = await r.json().catch(() => null);
-      if (body && typeof body === 'object' && 'id' in body && 'role' in body) {
-        return { kind: 'authenticated', user: body as OperatorUser };
-      }
-      return { kind: 'anonymous', user: {} };
+      const { user } = await r.json();
+      return { kind: 'authenticated', user: user as User };
     }
+    // Token invalid — clear it
     if (r.status === 401) {
       try { localStorage.removeItem(TOKEN_KEY); } catch { /* ignore */ }
-      return { kind: 'anonymous', user: {} };
     }
     return { kind: 'anonymous', user: {} };
   } catch {
-    // Network blip — degrade without nuking the token.
+    // Network blip — keep token for retry
     return { kind: 'anonymous', user: {} };
   }
 }
@@ -71,46 +84,49 @@ async function probeMe(token: string | null): Promise<AuthState> {
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<AuthState>({ kind: 'loading' });
 
+  // Mount probe
   useEffect(() => {
     let cancelled = false;
-    const tok = (() => {
-      try { return localStorage.getItem(TOKEN_KEY); } catch { return null; }
-    })();
+    const tok = (() => { try { return localStorage.getItem(TOKEN_KEY); } catch { return null; } })();
     probeMe(tok).then((s) => { if (!cancelled) setState(s); });
     return () => { cancelled = true; };
   }, []);
 
-  // Periodic re-probe (60s). If the operator's token expires server-side
-  // we want the SPA to flip to anonymous within ~1m rather than the next
-  // manual page reload. Light enough that it doesn't hammer the API.
-  useEffect(() => {
-    const id = setInterval(() => {
-      const tok = (() => {
-        try { return localStorage.getItem(TOKEN_KEY); } catch { return null; }
-      })();
-      probeMe(tok).then((s) => setState(s));
-    }, 60_000);
-    return () => clearInterval(id);
-  }, []);
-
-  const login = useCallback(async (token: string): Promise<{ ok: boolean; error?: string }> => {
+  const login = useCallback(async (email: string, password: string) => {
     try {
       const r = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token }),
+        body: JSON.stringify({ email, password }),
       });
-      if (r.ok) {
-        const user = (await r.json()) as OperatorUser;
-        try { localStorage.setItem(TOKEN_KEY, token); } catch { /* ignore */ }
-        setState({ kind: 'authenticated', user });
+      const body = await r.json().catch(() => ({}));
+      if (r.ok && body.token && body.user) {
+        try { localStorage.setItem(TOKEN_KEY, body.token); } catch { /* ignore */ }
+        setState({ kind: 'authenticated', user: body.user });
         return { ok: true };
       }
-      if (r.status === 401) return { ok: false, error: 'invalid_token' };
-      if (r.status === 429) return { ok: false, error: 'rate_limited' };
-      return { ok: false, error: 'unknown' };
+      return { ok: false, error: body.error || 'Login failed' };
     } catch {
-      return { ok: false, error: 'network' };
+      return { ok: false, error: 'Network error — try again' };
+    }
+  }, []);
+
+  const register = useCallback(async (email: string, password: string, fullName: string) => {
+    try {
+      const r = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password, full_name: fullName }),
+      });
+      const body = await r.json().catch(() => ({}));
+      if ((r.status === 201 || r.ok) && body.token && body.user) {
+        try { localStorage.setItem(TOKEN_KEY, body.token); } catch { /* ignore */ }
+        setState({ kind: 'authenticated', user: body.user });
+        return { ok: true };
+      }
+      return { ok: false, error: body.error || 'Registration failed' };
+    } catch {
+      return { ok: false, error: 'Network error — try again' };
     }
   }, []);
 
@@ -124,8 +140,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo<AuthContextValue>(
-    () => ({ state, login, logout, getToken }),
-    [state, login, logout, getToken]
+    () => ({ state, login, register, logout, getToken }),
+    [state, login, register, logout, getToken]
   );
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

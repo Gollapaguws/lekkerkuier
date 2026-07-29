@@ -1,7 +1,7 @@
-import { LiveStreamStats, Show } from '../api/client';
+import { NowPlayingData, Show } from '../api/client';
 
 interface NowPlayingProps {
-  stats: LiveStreamStats | null;
+  stats: NowPlayingData | null;
   currentShow: Show | null;
   playing: boolean;
   className?: string;
@@ -38,10 +38,10 @@ export function NowPlaying({ stats, currentShow, playing, className = '' }: NowP
           <div className="flex items-center gap-4 mt-4 justify-center md:justify-start text-xs text-[var(--lk-text-muted)]">
             <span>
               <span className="w-2 h-2 inline-block rounded-full bg-[var(--lk-mint)] mr-1" />
-              {stats?.viewer_count ?? '—'} listeners
+              {stats?.listeners?.total ?? '—'} listeners
             </span>
-            <span>{stats?.bitrate ?? '—'} kbps</span>
-            <span>{stats?.server_name ?? 'Lekkerkuier'}</span>
+            <span>192 kbps</span>
+            <span>{stats?.station?.name ?? 'Lekkerkuier'}</span>
           </div>
         </div>
       </div>

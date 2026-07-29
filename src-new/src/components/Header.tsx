@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { useAuth } from '../auth/AuthProvider';
+import { useAuth, roleAtLeast } from '../auth/AuthProvider';
 import { useTheme, THEMES, ThemeName } from '../theme/themes.tsx';
 import { useI18n, type Lang } from '../i18n/I18nProvider';
 
@@ -11,8 +11,6 @@ const NAV = [
   { to: '/events', labelKey: 'nav.events' },
   { to: '/history', labelKey: 'history.title' },
   { to: '/blog', labelKey: 'blog.title' },
-  { to: '/gallery', labelKey: 'nav.gallery' },
-  { to: '/podcast', labelKey: 'podcast.title' },
   { to: '/chat', labelKey: 'nav.chat' },
   { to: '/about', labelKey: 'nav.about' },
   { to: '/support', labelKey: 'nav.support' },
@@ -34,7 +32,8 @@ export function Header({ onSearchOpen }: { onSearchOpen: () => void }) {
   const { theme, setTheme, cycleTheme } = useTheme();
   const { lang, setLang, t } = useI18n();
   const location = useLocation();
-  const isAdmin = state.kind === 'authenticated';
+  const isLoggedIn = state.kind === 'authenticated';
+  const userRole = isLoggedIn ? state.user.role : null;
 
   return (
     <header className="relative z-40 flex items-center justify-between px-4 md:px-8 py-3 border-b border-white/5 bg-[var(--lk-bg)]/80 backdrop-blur-xl">
@@ -105,10 +104,18 @@ export function Header({ onSearchOpen }: { onSearchOpen: () => void }) {
         </div>
 
         {/* Auth */}
-        {isAdmin ? (
+        {isLoggedIn ? (
           <div className="hidden md:flex items-center gap-2">
-            <Link to="/admin" className="text-xs text-[var(--lk-primary)] hover:text-[var(--lk-accent)]">Admin</Link>
-            <button onClick={logout} className="text-xs text-[var(--lk-text-muted)] hover:text-[var(--lk-accent)]">Logout</button>
+            {userRole && roleAtLeast(userRole, 'dj') && (
+              <Link to="/dj" className="text-xs text-[var(--lk-mint)] hover:text-[var(--lk-primary)]">DJ</Link>
+            )}
+            {userRole && roleAtLeast(userRole, 'manager') && (
+              <Link to="/manager" className="text-xs text-[var(--lk-accent)] hover:text-[var(--lk-primary)]">Manager</Link>
+            )}
+            {userRole && roleAtLeast(userRole, 'owner') && (
+              <Link to="/admin" className="text-xs text-[var(--lk-primary)] hover:text-[var(--lk-accent)]">Admin</Link>
+            )}
+            <button onClick={logout} className="text-xs text-[var(--lk-text-muted)] hover:text-[var(--lk-accent)] ml-1">Logout</button>
           </div>
         ) : (
           <Link to="/login" className="hidden md:block text-xs text-[var(--lk-text-muted)] hover:text-[var(--lk-text)]">
@@ -152,9 +159,17 @@ export function Header({ onSearchOpen }: { onSearchOpen: () => void }) {
             >
               {lang === 'en' ? '🇿🇦 Afrikaans' : '🇬🇧 English'}
             </button>
-            {isAdmin && (
+            {isLoggedIn && (
               <>
-                <Link to="/admin" onClick={() => setMenuOpen(false)} className="heading-sm text-xl text-[var(--lk-primary)]">Admin</Link>
+                {userRole && roleAtLeast(userRole, 'dj') && (
+                  <Link to="/dj" onClick={() => setMenuOpen(false)} className="heading-sm text-xl text-[var(--lk-mint)]">DJ Dashboard</Link>
+                )}
+                {userRole && roleAtLeast(userRole, 'manager') && (
+                  <Link to="/manager" onClick={() => setMenuOpen(false)} className="heading-sm text-xl text-[var(--lk-accent)]">Manager</Link>
+                )}
+                {userRole && roleAtLeast(userRole, 'owner') && (
+                  <Link to="/admin" onClick={() => setMenuOpen(false)} className="heading-sm text-xl text-[var(--lk-primary)]">Admin</Link>
+                )}
                 <button onClick={() => { logout(); setMenuOpen(false); }} className="heading-sm text-xl text-[var(--lk-accent)]">Logout</button>
               </>
             )}

@@ -65,7 +65,7 @@ const POSTS: BlogPost[] = [
   },
   {
     slug: 'submission-guide',
-    title: 'How to Submit Your Show: A Complete Guide for New DJs',
+    title: 'How to Become a DJ: A Complete Guide',
     excerpt: 'Want to host your own show on Lekkerkuier? We\'ve put together everything you need to know about submitting, preparing, and broadcasting your mix.',
     category: 'announcements',
     author: 'Programming Team',

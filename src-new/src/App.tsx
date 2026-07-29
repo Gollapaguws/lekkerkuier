@@ -1,4 +1,4 @@
-import { useState, useCallback, lazy, Suspense, useEffect } from 'react';
+import { useState, useCallback, lazy, Suspense, useEffect, useRef } from 'react';
 import { HashRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import type { JSX } from 'react';
 import { ErrorBoundary } from './components/ErrorBoundary';
@@ -10,8 +10,12 @@ import { InstallBanner } from './components/InstallBanner';
 import { ToastContainer } from './components/Toast';
 import { MiniPlayer } from './components/MiniPlayer';
 import { PageSkeleton } from './components/Skeleton';
-import { useAuth } from './auth/AuthProvider';
+import { useAuth, type Role } from './auth/AuthProvider';
 import { Home } from './pages/Home';
+
+const Register = lazy(() => import('./pages/Register').then((m) => ({ default: m.Register })));
+const DjDashboard = lazy(() => import('./pages/DjDashboard').then((m) => ({ default: m.DjDashboard })));
+const ManagerDashboard = lazy(() => import('./pages/ManagerDashboard').then((m) => ({ default: m.ManagerDashboard })));
 
 const Schedule = lazy(() => import('./pages/Schedule').then((m) => ({ default: m.Schedule })));
 const DJs = lazy(() => import('./pages/DJs').then((m) => ({ default: m.DJs })));
@@ -19,10 +23,8 @@ const Events = lazy(() => import('./pages/Events').then((m) => ({ default: m.Eve
 const About = lazy(() => import('./pages/About').then((m) => ({ default: m.About })));
 const Contact = lazy(() => import('./pages/Contact').then((m) => ({ default: m.Contact })));
 const Chat = lazy(() => import('./pages/Chat').then((m) => ({ default: m.Chat })));
-const Gallery = lazy(() => import('./pages/Gallery').then((m) => ({ default: m.Gallery })));
 const Support = lazy(() => import('./pages/Support').then((m) => ({ default: m.Support })));
 const Blog = lazy(() => import('./pages/Blog').then((m) => ({ default: m.Blog })));
-const Podcast = lazy(() => import('./pages/Podcast').then((m) => ({ default: m.Podcast })));
 const History = lazy(() => import('./pages/History').then((m) => ({ default: m.History })));
 const SiteMap = lazy(() => import('./pages/SiteMap').then((m) => ({ default: m.SiteMap })));
 const NotFound = lazy(() => import('./pages/NotFound').then((m) => ({ default: m.NotFound })));
@@ -69,12 +71,15 @@ function ShortcutHelp({ onClose }: { onClose: () => void }) {
   );
 }
 
-function RequireOperator({ children }: { children: JSX.Element }) {
+function RequireRole({ roles, children }: { roles: Role[]; children: JSX.Element }) {
   const { state } = useAuth();
   const loc = useLocation();
   if (state.kind === 'loading') return null;
   if (state.kind === 'anonymous') {
     return <Navigate to={`/login?next=${encodeURIComponent(loc.pathname)}`} replace />;
+  }
+  if (!roles.includes(state.user.role)) {
+    return <Navigate to="/" replace />;
   }
   return children;
 }
@@ -83,6 +88,7 @@ export function App() {
   const [playing, setPlaying] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const togglePlay = useCallback(() => {
     setPlaying((p) => !p);
@@ -119,30 +125,31 @@ export function App() {
           <ErrorBoundary>
             <Suspense fallback={<PageSkeleton />}>
               <Routes>
-                <Route path="/" element={<Home playing={playing} onTogglePlay={togglePlay} />} />
-                <Route path="/listen" element={<Home playing={playing} onTogglePlay={togglePlay} />} />
+                <Route path="/" element={<Home playing={playing} onTogglePlay={togglePlay} audioRef={audioRef} />} />
+                <Route path="/listen" element={<Home playing={playing} onTogglePlay={togglePlay} audioRef={audioRef} />} />
                 <Route path="/schedule" element={<Schedule />} />
                 <Route path="/djs" element={<DJs />} />
                 <Route path="/events" element={<Events />} />
-                <Route path="/gallery" element={<Gallery />} />
                 <Route path="/blog" element={<Blog />} />
-                <Route path="/podcast" element={<Podcast playing={playing} onTogglePlay={togglePlay} />} />
                 <Route path="/history" element={<History />} />
                 <Route path="/sitemap" element={<SiteMap />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/chat" element={<Chat />} />
                 <Route path="/support" element={<Support />} />
-                <Route path="/submit" element={<Submit />} />
+                <Route path="/submit" element={<RequireRole roles={['listener','dj','manager','owner']}><Submit /></RequireRole>} />
                 <Route path="/login" element={<Login />} />
-                <Route path="/admin" element={<RequireOperator><Admin /></RequireOperator>} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/dj" element={<RequireRole roles={['dj','manager','owner']}><DjDashboard /></RequireRole>} />
+                <Route path="/manager" element={<RequireRole roles={['manager','owner']}><ManagerDashboard /></RequireRole>} />
+                <Route path="/admin" element={<RequireRole roles={['owner']}><Admin /></RequireRole>} />
                 <Route path="/404" element={<NotFound />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>
           </ErrorBoundary>
         </main>
-        <Player playing={playing} onTogglePlay={togglePlay} />
+        <Player playing={playing} onTogglePlay={togglePlay} audioRef={audioRef} />
         <Footer />
         <Search isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
         <InstallBanner />

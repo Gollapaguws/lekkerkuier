@@ -195,7 +195,7 @@ html, body, #root {
 .animate-spin-slow { animation: spin-slow 20s linear infinite; }
 
 /* Stagger children */
-.stagger > * { opacity: 0; animation: slide-up 500ms ease-out forwards; }
+.stagger > * { animation: slide-up 500ms ease-out forwards; }
 .stagger > *:nth-child(1) { animation-delay: 50ms; }
 .stagger > *:nth-child(2) { animation-delay: 120ms; }
 .stagger > *:nth-child(3) { animation-delay: 190ms; }
@@ -206,31 +206,31 @@ html, body, #root {
 /* ══════════════════════════════════════════════════════
    HERO SECTION
    ══════════════════════════════════════════════════════ */
-.hero-play-btn {
+button.hero-play-btn {
   width: 180px;
   height: 180px;
   border-radius: 50%;
-  background: radial-gradient(circle, var(--lk-primary) 0%, var(--lk-accent) 55%, transparent 90%);
   position: relative;
   display: grid;
   place-items: center;
   cursor: pointer;
-  border: none;
+  border: 3px solid rgba(86,210,255,0.5);
   animation: glow-pulse 2.8s ease-in-out infinite;
-  transition: transform 200ms ease;
+  transition: transform 200ms ease, box-shadow 200ms ease;
+  box-shadow: 0 0 40px -8px #56d2ff, 0 0 80px -16px #b388ff;
 }
-.hero-play-btn::before {
+button.hero-play-btn::before {
   content: '';
   position: absolute;
   inset: -12px;
   border-radius: 50%;
-  background: radial-gradient(circle, var(--lk-accent), transparent 70%);
+  background: radial-gradient(circle, #b388ff, transparent 70%);
   opacity: 0.35;
   filter: blur(24px);
   z-index: -1;
 }
-.hero-play-btn:hover { transform: scale(1.06); }
-.hero-play-btn:active { transform: scale(0.95); }
+button.hero-play-btn:hover { transform: scale(1.06); }
+button.hero-play-btn:active { transform: scale(0.95); }
 
 /* ══════════════════════════════════════════════════════
    PLAYER FOOTER
