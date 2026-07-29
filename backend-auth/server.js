@@ -2,6 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
+const fs = require('fs');
+const https = require('https');
 const { stmts } = require('./db');
 const { signToken, requireAuth, requireRole } = require('./auth');
 
@@ -174,6 +176,43 @@ app.post('/api/auth/disconnect-dj', requireAuth, requireRole('manager', 'owner')
   } catch (err) {
     console.error('[disconnect]', err.message);
     res.status(500).json({ ok: false, message: 'Disconnect failed' });
+  }
+});
+
+// ─── Contact form notification (fire-and-forget to ntfy.sh) ─
+app.post('/api/auth/notify-contact', async (req, res) => {
+  try {
+    const { name, email, message } = req.body;
+    if (!name || !email || !message) {
+      return res.status(400).json({ error: 'name, email, and message required' });
+    }
+
+    // Log locally for audit trail
+    const entry = JSON.stringify({ ts: new Date().toISOString(), name, email, message }) + '\n';
+    fs.appendFile('/var/log/lekkerkuier-contacts.log', entry, () => {});
+
+    // Fire-and-forget push notification via ntfy.sh (free, no auth)
+    const payload = JSON.stringify({
+      topic: 'lekkerkuier-contact',
+      title: `New message from ${name}`,
+      message: `${email}: ${message.slice(0, 200)}`,
+      priority: 3,
+      tags: ['envelope'],
+    });
+
+    const ntfyReq = https.request({
+      hostname: 'ntfy.sh',
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+    });
+    ntfyReq.write(payload);
+    ntfyReq.end();
+    ntfyReq.on('error', (err) => console.error('[notify] ntfy.sh unreachable:', err.message));
+
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('[notify-contact]', err.message);
+    res.status(500).json({ error: 'Notification failed' });
   }
 });
 

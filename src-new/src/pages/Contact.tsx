@@ -15,6 +15,8 @@ export function Contact() {
     setError(null);
     try {
       await api.sendContact({ ...form });
+      // Fire-and-forget notification (don't block UI on failure)
+      api.notifyContact({ ...form }).catch(() => {});
       setSent(true);
       toast('Message sent! We will get back to you soon.', 'success');
     } catch (err) {

@@ -119,6 +119,8 @@ export const api = {
   }) => jpost<PresignResult>('/api/uploads/presign', params, true),
   sendContact: (payload: { name: string; email: string; message: string }) =>
     jpost<{ ok: boolean }>('/api/contact', payload, false),
+  notifyContact: (payload: { name: string; email: string; message: string }) =>
+    jpost<{ ok: boolean }>('/api/auth/notify-contact', payload, false),
   sendChat: (payload: { name: string; message: string }) =>
     jpost<{ ok: boolean }>('/api/chat', payload, false),
   nowPlaying: () => jget<NowPlayingData[]>('/api/nowplaying'),
