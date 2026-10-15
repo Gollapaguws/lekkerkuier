@@ -330,4 +330,104 @@ describe('API Endpoints', () => {
       expect([502, 500]).toContain(res.status);
     });
   });
+
+  // ─── Contact form notification ──────────────────────────
+  // Covers the notify-contact endpoint: validation, the local audit
+  // append, and the fire-and-forget ntfy.sh push. https.request is
+  // stubbed so the suite never touches the network.
+
+  describe('POST /api/auth/notify-contact', () => {
+    it('rejects a request missing name, email or message', async () => {
+      const { default: request } = await import('supertest');
+
+      for (const body of [
+        {},
+        { name: 'A' },
+        { name: 'A', email: 'a@b.com' },
+        { email: 'a@b.com', message: 'hi' },
+      ]) {
+        const res = await request(app).post('/api/auth/notify-contact').send(body);
+        expect(res.status).toBe(400);
+        expect(res.body.error).toMatch(/required/);
+      }
+    });
+
+    it('accepts a complete submission and returns ok', async () => {
+      const { default: request } = await import('supertest');
+
+      const res = await request(app).post('/api/auth/notify-contact').send({
+        name: 'Thandi M',
+        email: 'thandi@example.com',
+        message: 'Love the station, when is the next show?',
+      });
+
+      expect(res.status).toBe(200);
+      expect(res.body).toEqual({ ok: true });
+    });
+
+    it('truncates long messages in the push payload', async () => {
+      const { default: request } = await import('supertest');
+      const https = await import('https');
+
+      const writes = [];
+      const origRequest = https.default.request;
+      https.default.request = (opts, cb) => {
+        const fake = {
+          write: (chunk) => writes.push(chunk),
+          end: () => {},
+          on: () => fake,
+        };
+        return fake;
+      };
+
+      try {
+        const long = 'x'.repeat(500);
+        const res = await request(app).post('/api/auth/notify-contact').send({
+          name: 'Long Message',
+          email: 'long@example.com',
+          message: long,
+        });
+
+        expect(res.status).toBe(200);
+        const payload = JSON.parse(writes.join(''));
+        expect(payload.topic).toBe('lekkerkuier-contact');
+        expect(payload.title).toBe('New message from Long Message');
+        // email prefix + 200 chars of the message
+        expect(payload.message).toBe(`long@example.com: ${'x'.repeat(200)}`);
+      } finally {
+        https.default.request = origRequest;
+      }
+    });
+
+    it('still returns ok when the push service is unreachable', async () => {
+      const { default: request } = await import('supertest');
+      const https = await import('https');
+
+      const origRequest = https.default.request;
+      https.default.request = () => {
+        const fake = {
+          write: () => {},
+          end: () => {},
+          on: (event, handler) => {
+            if (event === 'error') handler(new Error('ntfy.sh unreachable'));
+            return fake;
+          },
+        };
+        return fake;
+      };
+
+      try {
+        const res = await request(app).post('/api/auth/notify-contact').send({
+          name: 'Offline',
+          email: 'offline@example.com',
+          message: 'push should fail silently',
+        });
+        // fire-and-forget: the caller is not blocked by push failure
+        expect(res.status).toBe(200);
+        expect(res.body).toEqual({ ok: true });
+      } finally {
+        https.default.request = origRequest;
+      }
+    });
+  });
 });
