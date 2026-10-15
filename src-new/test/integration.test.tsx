@@ -6,7 +6,7 @@ import { ToastProvider } from '../src/components/Toast';
 
 // ─── Global mocks ────────────────────────────────────────
 
-vi.mock('../src/api/client', () => ({
+vi.mock('@project/src/api/client', () => ({
   api: {
     shows: () => Promise.resolve([]),
     nowPlaying: () => Promise.resolve([]),
@@ -20,13 +20,13 @@ vi.mock('../src/api/client', () => ({
   },
 }));
 
-vi.mock('../src/theme/themes.tsx', () => ({
+vi.mock('@project/src/theme/themes.tsx', () => ({
   useTheme: () => ({ theme: 'psytech', setTheme: vi.fn(), cycleTheme: vi.fn() }),
   ThemeProvider: ({ children }: any) => children,
   THEMES: ['cosmic', 'industrial', 'psytech'],
 }));
 
-vi.mock('../src/i18n/I18nProvider', () => ({
+vi.mock('@project/src/i18n/I18nProvider', () => ({
   useI18n: () => ({
     lang: 'en', setLang: vi.fn(),
     t: (key: string) => {
@@ -44,33 +44,33 @@ vi.mock('../src/i18n/I18nProvider', () => ({
 }));
 
 // Mock sub-components to simplify rendering
-vi.mock('../src/components/Hero', () => ({
+vi.mock('@project/src/components/Hero', () => ({
   Hero: ({ tagline }: any) => <div data-testid="hero">{tagline}</div>,
 }));
-vi.mock('../src/components/Player', () => ({
+vi.mock('@project/src/components/Player', () => ({
   Player: () => <div data-testid="player">Player</div>,
 }));
-vi.mock('../src/components/Footer', () => ({
+vi.mock('@project/src/components/Footer', () => ({
   Footer: () => <div data-testid="footer">Footer</div>,
 }));
-vi.mock('../src/components/AudioVisualizer', () => ({
+vi.mock('@project/src/components/AudioVisualizer', () => ({
   AudioVisualizer: () => <div data-testid="visualizer" />,
 }));
-vi.mock('../src/components/NowPlaying', () => ({
+vi.mock('@project/src/components/NowPlaying', () => ({
   NowPlaying: () => <div data-testid="now-playing" />,
 }));
-vi.mock('../src/components/RecentlyPlayed', () => ({
+vi.mock('@project/src/components/RecentlyPlayed', () => ({
   RecentlyPlayed: () => <div data-testid="recently-played" />,
 }));
-vi.mock('../src/components/ShowCard', () => ({
+vi.mock('@project/src/components/ShowCard', () => ({
   ShowCard: () => <div data-testid="show-card" />,
 }));
-vi.mock('../src/components/Skeleton', () => ({
+vi.mock('@project/src/components/Skeleton', () => ({
   PageSkeleton: () => <div data-testid="skeleton">Loading...</div>,
 }));
 
 // Mock InstallBanner — uses window.matchMedia which jsdom lacks
-vi.mock('../src/components/InstallBanner', () => ({
+vi.mock('@project/src/components/InstallBanner', () => ({
   InstallBanner: () => null,
 }));
 

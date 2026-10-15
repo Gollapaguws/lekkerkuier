@@ -7,14 +7,14 @@ import { AuthProvider } from '../src/auth/AuthProvider';
 
 // Mock theme and i18n modules to avoid provider chain complexity
 // Must match the exact import path Header uses: '../theme/themes.tsx'
-vi.mock('../src/theme/themes.tsx', () => ({
+vi.mock('@project/src/theme/themes.tsx', () => ({
   useTheme: () => ({ theme: 'psytech', setTheme: vi.fn(), cycleTheme: vi.fn() }),
   ThemeProvider: ({ children }: any) => children,
   THEMES: ['cosmic', 'industrial', 'psytech'],
   ThemeName: 'psytech',
 }));
 
-vi.mock('../src/i18n/I18nProvider', () => ({
+vi.mock('@project/src/i18n/I18nProvider', () => ({
   useI18n: () => ({
     lang: 'en',
     setLang: vi.fn(),

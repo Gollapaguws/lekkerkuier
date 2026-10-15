@@ -7,7 +7,7 @@ import { ToastProvider } from '../src/components/Toast';
 // ─── Global mocks ────────────────────────────────────────
 
 // Mock API client — all data calls return empty arrays or null
-vi.mock('../src/api/client', () => ({
+vi.mock('@project/src/api/client', () => ({
   api: {
     shows: () => Promise.resolve([]),
     nowPlaying: () => Promise.resolve([]),
@@ -26,14 +26,14 @@ vi.mock('../src/api/client', () => ({
 }));
 
 // Mock theme provider
-vi.mock('../src/theme/themes', () => ({
+vi.mock('@project/src/theme/themes', () => ({
   useTheme: () => ({ theme: 'psytech', setTheme: vi.fn(), cycleTheme: vi.fn() }),
   ThemeProvider: ({ children }: any) => children,
   THEMES: ['cosmic', 'industrial', 'psytech'],
 }));
 
 // Mock i18n provider
-vi.mock('../src/i18n/I18nProvider', () => {
+vi.mock('@project/src/i18n/I18nProvider', () => {
   const messages: Record<string, string> = {
     'nav.home': 'Home','nav.schedule': 'Schedule','nav.djs': 'DJs','nav.events': 'Events',
     'nav.gallery': 'Gallery','nav.chat': 'Chat','nav.about': 'About','nav.support': 'Support',

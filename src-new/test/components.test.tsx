@@ -11,7 +11,7 @@ import { InstallBanner } from '../src/components/InstallBanner';
 import type { Show, NowPlayingData } from '../src/api/client';
 
 // Mock i18n for Search component
-vi.mock('../src/i18n/I18nProvider', () => ({
+vi.mock('@project/src/i18n/I18nProvider', () => ({
   useI18n: () => ({
     lang: 'en',
     setLang: vi.fn(),
